@@ -19,6 +19,7 @@ struct FavoriteStationRowView: View {
             // 정류장 이름
             Text("\(station.stationName)")
                 .font(.headline)
+                .padding()
             
             // 정류장이름과 노선을 구분하는 Divider (좌우 여백 없음)
             Divider()
@@ -45,18 +46,16 @@ struct FavoriteStationRowView: View {
                                 .foregroundColor(.gray)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
-                    }
+                    }.padding()
                     
                     // 마지막 노선이 아니라면 노선과 노선 사이에 Divider 추가
                     if index < station.busRoutes.count - 1 {
                         Divider()
+                            .padding(.leading)
                     }
                 }
             }
         }
-        // 전체 정류장 박스에 대해 좌우에 여백을 주어 다른 정류장 박스와 분리
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
         .background(Color(.systemBackground))
         .cornerRadius(8)
         .onAppear {
