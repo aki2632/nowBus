@@ -1,0 +1,6 @@
+framework module Pods_GGBusInfo {
+  umbrella header "Pods-GGBusInfo-umbrella.h"
+
+  export *
+  module * { export * }
+}
