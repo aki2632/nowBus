@@ -17,6 +17,7 @@ struct BusArrivalInfoView: View {
     @State private var timer: Timer?
     @State private var updateTimer: Timer?
     
+    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var favoriteStationManager: FavoriteStationManager
     
     var isFavoriteStation: Bool {
@@ -26,18 +27,11 @@ struct BusArrivalInfoView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                // 만약 내부에도 즐겨찾기 버튼을 남기고 싶다면 아래 코드를 유지하세요.
+                // 지금은 네비게이션 바에 즐겨찾기 버튼을 배치하므로 필요없다면 삭제 가능합니다.
                 VStack {
-                    HStack {
-                        Text("\(stationName)")
-                            .font(.headline)
-                        Spacer()
-                        Button(action: { toggleFavoriteStation() }) {
-                            Image(systemName: isFavoriteStation ? "star.fill" : "star")
-                                .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
-                                .font(.system(size: 25))
-                        }
-                    }
-                    .padding(.top, 20)
+                    Text("\(mobileNo)")
+                        .font(.headline)
                 }
                 .padding(.horizontal)
                 
@@ -48,6 +42,31 @@ struct BusArrivalInfoView: View {
             .padding()
         }
         .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
+        .navigationTitle(stationName)
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            // 커스텀 백 버튼 (왼쪽)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 20, weight: .medium))
+                }
+            }
+            // 즐겨찾기 버튼 (오른쪽)
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    toggleFavoriteStation()
+                }) {
+                    Image(systemName: isFavoriteStation ? "star.fill" : "star")
+                        .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
+                        .font(.system(size: 20))
+                }
+            }
+        }
         .onAppear {
             startUpdateTimer()
             startCountdownTimer()
@@ -74,15 +93,16 @@ struct BusArrivalInfoView: View {
                             .font(.system(size: 25))
                     }
                 }
+                Text("\(arrival.routeDestName) 방면")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                
                 DualTimeDisplayView(
                     seconds1: arrival.predictTimeSec1,
                     seconds2: arrival.predictTimeSec2
                 )
                 .font(.caption)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                Text("\(arrival.routeDestName) 방면")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
             }
             Spacer()
         }

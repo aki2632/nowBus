@@ -10,10 +10,9 @@ import SwiftUI
 struct TimeDisplayView: View {
     let seconds: Int?
     
-    // 각 열의 고정 너비를 정의 (필요에 따라 조절 가능)
-    private let minuteWidth: CGFloat = 30
-    private let labelWidth: CGFloat = 15
-    private let secondWidth: CGFloat = 30
+    // 필요에 따라 고정 너비 조정 (여기서는 예시로 적당한 값 사용)
+    private let minuteWidth: CGFloat = 35
+    private let secondWidth: CGFloat = 35
     
     var body: some View {
         HStack(spacing: 0) {
@@ -22,21 +21,15 @@ struct TimeDisplayView: View {
                 let minutes = time / 60
                 let secondsRemaining = time % 60
                 
-                // 고정된 열로 구성
-                Text(String(format: "%2d", minutes))
+                Text(String(format: "%02d분", minutes))
                     .monospacedDigit()
                     .frame(width: minuteWidth, alignment: .trailing)
-                Text("분")
-                    .frame(width: labelWidth, alignment: .leading)
-                Text(String(format: "%2d", secondsRemaining))
+                Text(String(format: " %02d초", secondsRemaining))
                     .monospacedDigit()
                     .frame(width: secondWidth, alignment: .trailing)
-                Text("초")
-                    .frame(width: labelWidth, alignment: .leading)
             } else {
-                // 시간이 없을 경우에도 같은 총 너비(분, 레이블, 초 등)를 사용하여 중앙 정렬
                 Text("정보 없음")
-                    .frame(width: minuteWidth + labelWidth + secondWidth + labelWidth, alignment: .trailing)
+                    .frame(width: minuteWidth + secondWidth, alignment: .trailing)
             }
         }
         .font(.caption)

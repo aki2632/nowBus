@@ -24,7 +24,7 @@ struct FavoriteStationRowView: View {
             ForEach(station.busRoutes, id: \.routeId) { route in
                 HStack {
                     Text("\(route.routeName)")
-                        .font(.caption)
+                        .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     if let arrival = busArrivals.first(where: { $0.routeId == route.routeId }) {
