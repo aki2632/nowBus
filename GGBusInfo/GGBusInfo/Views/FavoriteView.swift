@@ -25,12 +25,6 @@ struct FavoriteView: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                 }
-                .onDelete { offsets in
-                    for index in offsets {
-                        let station = favoriteStationManager.favoriteStations[index]
-                        favoriteStationManager.removeFavoriteStation(stationId: station.stationId)
-                    }
-                }
             }
         }
     }
