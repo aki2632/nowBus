@@ -10,7 +10,7 @@ import SwiftUI
 struct TimeDisplayView: View {
     let seconds: Int?
     
-    // 필요에 따라 고정 너비 조정 (여기서는 예시로 적당한 값 사용)
+    // 필요에 따라 고정 너비 조정 (여기서는 예시로 적당한 값 사용) 프레임 계산해서 고쳐볼 것
     private let minuteWidth: CGFloat = 35
     private let secondWidth: CGFloat = 35
     
