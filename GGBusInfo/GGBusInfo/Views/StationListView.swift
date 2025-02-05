@@ -101,7 +101,7 @@ struct StationListView: View {
                                     Text("\(station.stationName)")
                                         .font(.headline)
                                     HStack {
-                                        Text("\(station.mobileNo)")
+                                        Text(String(format: "%d", station.mobileNo))
                                             .font(.caption)
                                         Spacer()
                                         Text("거리: \(station.distance) m")
