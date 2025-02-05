@@ -15,11 +15,15 @@ struct FavoriteView: View {
         NavigationView {
             List {
                 ForEach(favoriteStationManager.favoriteStations) { station in
-                    NavigationLink(destination: BusArrivalInfoView(stationId: station.stationId,
-                                                                   stationName: station.stationName,
-                                                                   mobileNo: station.mobileNo)) {
+                    NavigationLink(destination: BusArrivalInfoView(
+                        stationId: station.stationId,
+                        stationName: station.stationName,
+                        mobileNo: station.mobileNo)
+                    ) {
                         FavoriteStationRowView(station: station)
                     }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
                 .onDelete { offsets in
                     for index in offsets {
