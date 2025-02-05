@@ -33,7 +33,6 @@ struct FavoriteStationRowView: View {
                             seconds2: arrival.predictTimeSec2
                         )
                         .font(.caption)
-                        .foregroundColor(.blue)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     } else {
                         Text("정보없음")

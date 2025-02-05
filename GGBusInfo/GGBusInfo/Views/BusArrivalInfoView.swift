@@ -79,8 +79,7 @@ struct BusArrivalInfoView: View {
                     seconds2: arrival.predictTimeSec2
                 )
                 .font(.caption)
-                .foregroundColor(.blue)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .trailing)
                 Text("\(arrival.routeDestName) 방면")
                     .font(.subheadline)
                     .foregroundColor(.gray)

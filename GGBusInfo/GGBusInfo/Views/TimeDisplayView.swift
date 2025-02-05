@@ -12,7 +12,7 @@ struct TimeDisplayView: View {
     
     // 각 열의 고정 너비를 정의 (필요에 따라 조절 가능)
     private let minuteWidth: CGFloat = 30
-    private let labelWidth: CGFloat = 20
+    private let labelWidth: CGFloat = 15
     private let secondWidth: CGFloat = 30
     
     var body: some View {
@@ -35,7 +35,7 @@ struct TimeDisplayView: View {
                     .frame(width: labelWidth, alignment: .leading)
             } else {
                 // 시간이 없을 경우에도 같은 총 너비(분, 레이블, 초 등)를 사용하여 중앙 정렬
-                Text("정보없음")
+                Text("정보 없음")
                     .frame(width: minuteWidth + labelWidth + secondWidth + labelWidth, alignment: .trailing)
             }
         }
