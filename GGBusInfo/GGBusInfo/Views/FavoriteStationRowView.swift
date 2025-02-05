@@ -68,15 +68,6 @@ struct FavoriteStationRowView: View {
         }
     }
     
-    // 도착시간을 "분 초 후" 형식으로 포맷팅
-    func formatTime(_ seconds: Int?) -> String {
-        guard var time = seconds else { return "정보없음" }
-        if time > 0 { time -= 1 }
-        let minutes = time / 60
-        let secondsRemaining = time % 60
-        return "\(minutes)분 \(secondsRemaining)초 후"
-    }
-    
     // 1초마다 도착시간을 감소시키는 타이머
     func startCountdownTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
