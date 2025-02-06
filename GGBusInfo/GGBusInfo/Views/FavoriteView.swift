@@ -51,9 +51,6 @@ struct FavoriteView: View {
                             
                             // 1초 후(애니메이션 완료 시점) 상태를 초기화하여 원래 상태로 복귀
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                // rotation을 초기 상태(0도)로 복귀시키지만, 실제로 360도와 0도는 동일한 모습이므로
-                                // 이미지가 자연스럽게 정지한 것처럼 보임
-                                rotation = 0
                                 isAnimating = false
                             }
                         }) {
