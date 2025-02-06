@@ -10,9 +10,8 @@ import SwiftUI
 struct TimeDisplayView: View {
     let seconds: Int?
     
-    // 필요에 따라 고정 너비 조정 (여기서는 예시로 적당한 값 사용) 프레임 계산해서 고쳐볼 것
-    private let minuteWidth: CGFloat = 35
-    private let secondWidth: CGFloat = 35
+    // 전체 프레임 너비를 totalWidth로 통일
+    private let totalWidth: CGFloat = 70
     
     var body: some View {
         HStack(spacing: 0) {
@@ -21,15 +20,19 @@ struct TimeDisplayView: View {
                 let minutes = time / 60
                 let secondsRemaining = time % 60
                 
-                Text(String(format: "%02d분", minutes))
+                // 분이 0이면 초만 표시, 그렇지 않으면 분과 초 모두 표시
+                let formattedTime: String = minutes > 0
+                    ? String(format: "%d분 %d초", minutes, secondsRemaining)
+                    : String(format: "%d초", secondsRemaining)
+                
+                Text(formattedTime)
                     .monospacedDigit()
-                    .frame(width: minuteWidth, alignment: .trailing)
-                Text(String(format: " %02d초", secondsRemaining))
-                    .monospacedDigit()
-                    .frame(width: secondWidth, alignment: .trailing)
+                    .frame(width: totalWidth, alignment: .leading)
             } else {
-                Text("정보 없음")
-                    .frame(width: minuteWidth + secondWidth, alignment: .trailing)
+                Text("도착정보없음")
+                    .frame(width: totalWidth, alignment: .leading)
+                    .foregroundStyle(Color.gray)
+                    .font(.system(size: 12))
             }
         }
         .font(.caption)

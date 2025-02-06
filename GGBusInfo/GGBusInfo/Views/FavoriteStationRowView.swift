@@ -9,28 +9,30 @@ import SwiftUI
 import RealmSwift
 
 struct FavoriteStationRowView: View {
-    let station: FavoriteStation
+    @ObservedRealmObject var station: FavoriteStation  // Realm 객체 변경 감지를 위해 변경
     @State private var busArrivals: [BusArrival] = []
     @State private var timer: Timer?
     @State private var updateTimer: Timer?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // 정류장 이름
-            Text("\(station.stationName)")
-                .font(.headline)
-                .padding()
-            
-            // 정류장이름과 노선을 구분하는 Divider (좌우 여백 없음)
+            VStack(alignment: .leading) {
+                Text(station.stationName)
+                    .font(.headline)
+                Text(station.mobileNo)
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            .padding()
+                
             Divider()
                 .padding(.horizontal, 0)
             
-            // 즐겨찾기된 각 버스 노선과 도착정보 표시
             ForEach(Array(station.busRoutes.enumerated()), id: \.element.routeId) { index, route in
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("\(route.routeName)")
-                            .font(.subheadline)
+                        Text(route.routeName)
+                            .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if let arrival = busArrivals.first(where: { $0.routeId == route.routeId }) {
@@ -39,25 +41,19 @@ struct FavoriteStationRowView: View {
                                 seconds2: arrival.predictTimeSec2
                             )
                             .font(.caption)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        } else {
-                            Text("정보없음")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    }.padding()
+                    }
+                    .padding()
                     
-                    // 마지막 노선이 아니라면 노선과 노선 사이에 Divider 추가
-                    if index < station.busRoutes.count - 1 {
+                    if index < station.busRoutes.count - 1 { // 마지막 노선이 아닌 경우에만 Divider 추가
                         Divider()
                             .padding(.leading)
                     }
                 }
             }
         }
-        .background(Color(.systemBackground))
-        .cornerRadius(8)
+        .padding(.vertical, 8)
         .onAppear {
             fetchData()
             startUpdateTimer()
@@ -66,6 +62,10 @@ struct FavoriteStationRowView: View {
         .onDisappear {
             updateTimer?.invalidate()
             timer?.invalidate()
+        }
+        // 새로고침 버튼의 알림을 수신하면 API 정보를 다시 요청합니다.
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("RefreshBusArrival"))) { _ in
+            fetchData()
         }
     }
     
@@ -82,7 +82,6 @@ struct FavoriteStationRowView: View {
         }
     }
     
-    // 1초마다 도착시간을 감소시키는 타이머
     func startCountdownTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             for i in 0..<self.busArrivals.count {
@@ -96,7 +95,6 @@ struct FavoriteStationRowView: View {
         }
     }
     
-    // 15초마다 API 호출로 도착정보 갱신
     func startUpdateTimer() {
         updateTimer = Timer.scheduledTimer(withTimeInterval: 180, repeats: true) { _ in
             self.fetchData()
