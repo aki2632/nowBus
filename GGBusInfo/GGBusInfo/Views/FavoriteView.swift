@@ -25,7 +25,7 @@ struct FavoriteView: View {
                                 mobileNo: station.mobileNo)
                             ) {
                                 FavoriteStationRowView(station: station)
-                                    .background(Color(.systemGray6))
+                                    .background(Color(.white))
                                     .cornerRadius(5)
                                     .padding(.horizontal, 0)
                             }
@@ -55,7 +55,7 @@ struct FavoriteView: View {
                             }
                         }) {
                             Image(systemName: "arrow.triangle.2.circlepath")
-                                .frame(width: 20, height: 20)
+                                .font(.system(size: 35))
                                 .padding()
                                 .background(Color.gray)
                                 .foregroundColor(.white)
