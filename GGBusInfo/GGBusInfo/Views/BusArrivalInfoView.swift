@@ -8,6 +8,15 @@
 import SwiftUI
 import RealmSwift
 
+/// headerView의 위치 값을 전달하기 위한 PreferenceKey
+struct ViewOffsetKey: PreferenceKey {
+    typealias Value = CGFloat
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct BusArrivalInfoView: View {
     let stationId: String
     let stationName: String
@@ -16,6 +25,7 @@ struct BusArrivalInfoView: View {
     @State private var busArrivals: [BusArrival] = []
     @State private var timer: Timer?
     @State private var updateTimer: Timer?
+    @State private var showNavigationBarFavorite = false  // 스크롤 상태에 따라 즐겨찾기 버튼 위치 전환
     
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var favoriteStationManager: FavoriteStationManager
@@ -25,49 +35,65 @@ struct BusArrivalInfoView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // 만약 내부에도 즐겨찾기 버튼을 남기고 싶다면 아래 코드를 유지하세요.
-                // 지금은 네비게이션 바에 즐겨찾기 버튼을 배치하므로 필요없다면 삭제 가능합니다.
-                VStack {
-                    Text("\(mobileNo)")
-                        .font(.headline)
-                }
-                .padding(.horizontal)
-                
-                ForEach(busArrivals, id: \.routeId) { arrival in
-                    BusArrivalRow(arrival: arrival)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                headerView
+                ForEach(0..<busArrivals.count, id: \.self) { index in
+                    busArrivalRow(arrival: busArrivals[index])
+                    if index < busArrivals.count - 1 {
+                        Divider()
+                    }
                 }
             }
-            .padding()
+            .padding(.horizontal, 0)
         }
         .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
         .navigationTitle(stationName)
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(true)
         .toolbar {
-            // 커스텀 백 버튼 (왼쪽)
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
                         .font(.system(size: 20, weight: .medium))
                 }
             }
-            // 즐겨찾기 버튼 (오른쪽)
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    toggleFavoriteStation()
-                }) {
-                    Image(systemName: isFavoriteStation ? "star.fill" : "star")
-                        .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
-                        .font(.system(size: 20))
-                }
+                AnyView(
+                    Group {
+                        if showNavigationBarFavorite {
+                            Button(action: {
+                                toggleFavoriteStation()
+                            }) {
+                                Image(systemName: isFavoriteStation ? "star.fill" : "star")
+                                    .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
+                                    .font(.system(size: 20))
+                            }
+                        } else {
+                            EmptyView()
+                        }
+                    }
+                )
             }
         }
         .onAppear {
+            // 네비게이션 바의 외형 설정
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.gray
+            appearance.shadowColor = .clear    // 구분선(섀도우) 제거
+            appearance.titleTextAttributes = [
+                .foregroundColor: UIColor.white  // 기본 타이틀 폰트 색상
+            ]
+            appearance.largeTitleTextAttributes = [
+                .foregroundColor: UIColor.white  // large 타이틀 폰트 색상
+            ]
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            
             startUpdateTimer()
             startCountdownTimer()
             fetchData()
@@ -78,37 +104,78 @@ struct BusArrivalInfoView: View {
         }
     }
     
-    func BusArrivalRow(arrival: BusArrival) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("\(arrival.routeName)")
-                        .font(.headline)
+    /// 상단 헤더 뷰: mobileNo와 (스크롤 상태에 따라) 즐겨찾기 버튼 포함, 어두운 회색 배경 적용
+    var headerView: some View {
+        VStack(spacing: 0) {
+            // headerView의 위치를 추적하기 위한 GeometryReader
+            GeometryReader { geo in
+                Color.clear
+                    .preference(key: ViewOffsetKey.self, value: geo.frame(in: .global).minY)
+            }
+            .frame(height: 0)
+            
+            // 전체 너비를 채우도록 frame 수정
+            VStack {
+                VStack {
+                    Text(mobileNo)
+                        .font(.subheadline)
+                        .foregroundColor(.white)
                     Spacer()
-                    Button(action: {
-                        toggleBusRouteFavorite(routeId: arrival.routeId, routeName: arrival.routeName)
-                    }) {
-                        Image(systemName: favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: arrival.routeId) ? "star.fill" : "star")
-                            .foregroundColor(favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: arrival.routeId) ? AppTheme.accentColor : .gray)
-                            .font(.system(size: 25))
+                    // headerView가 화면에 보일 때는 오른쪽에 즐겨찾기 버튼 표시
+                    if !showNavigationBarFavorite {
+                        Button(action: {
+                            toggleFavoriteStation()
+                        }) {
+                            Image(systemName: isFavoriteStation ? "star.fill" : "star")
+                                .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
+                                .font(.system(size: 20))
+                        }
                     }
                 }
-                Text("\(arrival.routeDestName) 방면")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+            .frame(maxWidth: .infinity)   // 화면 전체 너비로 확장
+            .background(Color(.gray))
+        }
+        .onPreferenceChange(ViewOffsetKey.self) { value in
+            withAnimation {
+                showNavigationBarFavorite = value < 0
+            }
+        }
+    }
+    
+    func busArrivalRow(arrival: BusArrival) -> some View {
+        HStack {
+            Button(action: {
+                toggleBusRouteFavorite(routeId: arrival.routeId, routeName: arrival.routeName)
+            }) {
+                Image(systemName: favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: arrival.routeId) ? "star.fill" : "star")
+                    .foregroundColor(favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: arrival.routeId) ? AppTheme.accentColor : .gray)
+                    .font(.system(size: 25))
+            }
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("\(arrival.routeName)")
+                        .font(.headline)
+                    
+                    Text("\(arrival.routeDestName) 방면")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 DualTimeDisplayView(
                     seconds1: arrival.predictTimeSec1,
                     seconds2: arrival.predictTimeSec2
                 )
                 .font(.caption)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            Spacer()
         }
         .padding()
         .background(Color.white)
-        .cornerRadius(10)
+        .cornerRadius(5)
     }
     
     func fetchData() {
