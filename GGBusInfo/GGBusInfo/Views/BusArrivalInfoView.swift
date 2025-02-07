@@ -8,15 +8,6 @@
 import SwiftUI
 import RealmSwift
 
-/// headerView의 위치 값을 전달하기 위한 PreferenceKey
-struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct BusArrivalInfoView: View {
     let stationId: String
     let stationName: String
@@ -39,7 +30,6 @@ struct BusArrivalInfoView: View {
     }
     
     var body: some View {
-        // ScrollView를 ZStack으로 감싸고, 하단 우측에 새로고침 버튼을 배치합니다.
         ZStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 0) {
@@ -61,15 +51,10 @@ struct BusArrivalInfoView: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        // 데이터를 새로 불러옴
                         fetchData()
-                        
-                        // 애니메이션 중복 실행 방지
                         guard !isAnimating else { return }
                         isAnimating = true
                         rotation += 720
-                        
-                        // 1초 후 애니메이션 완료되면 상태 복원
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             isAnimating = false
                         }
@@ -101,21 +86,17 @@ struct BusArrivalInfoView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                AnyView(
-                    Group {
-                        if showNavigationBarFavorite {
-                            Button(action: {
-                                toggleFavoriteStation()
-                            }) {
-                                Image(systemName: isFavoriteStation ? "star.fill" : "star")
-                                    .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
-                                    .font(.system(size: 20))
-                            }
-                        } else {
-                            EmptyView()
+                Group {
+                    if showNavigationBarFavorite {
+                        Button(action: {
+                            toggleFavoriteStation()
+                        }) {
+                            Image(systemName: isFavoriteStation ? "star.fill" : "star")
+                                .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
+                                .font(.system(size: 20))
                         }
                     }
-                )
+                }
             }
         }
         .onAppear {
@@ -142,39 +123,36 @@ struct BusArrivalInfoView: View {
     /// 상단 헤더 뷰 (스크롤 상태에 따라 즐겨찾기 버튼 포함)
     var headerView: some View {
         VStack(spacing: 0) {
-            GeometryReader { geo in
-                Color.clear
-                    .preference(key: ViewOffsetKey.self, value: geo.frame(in: .global).minY)
-            }
-            .frame(height: 0)
-            
             VStack {
-                VStack {
-                    Text(mobileNo)
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                    Spacer()
-                    if !showNavigationBarFavorite {
-                        Button(action: {
-                            toggleFavoriteStation()
-                        }) {
-                            Image(systemName: isFavoriteStation ? "star.fill" : "star")
-                                .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
-                                .font(.system(size: 20))
-                        }
+                Text(mobileNo)
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+                Spacer()
+                if !showNavigationBarFavorite {
+                    Button(action: {
+                        toggleFavoriteStation()
+                    }) {
+                        Image(systemName: isFavoriteStation ? "star.fill" : "star")
+                            .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
+                            .font(.system(size: 20))
                     }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
             }
-            .frame(maxWidth: .infinity)
-            .background(Color(.gray))
+            .padding(.horizontal)
+            .padding(.vertical, 8)
         }
-        .onPreferenceChange(ViewOffsetKey.self) { value in
-            withAnimation {
-                showNavigationBarFavorite = value < 0
+        .frame(maxWidth: .infinity)
+        .background(Color(.gray))
+        // 참고 코드와 같이 background에 GeometryReader를 사용하여 오프셋 측정
+        .background(GeometryReader { proxy -> Color in
+            let offset = proxy.frame(in: .global).minY
+            DispatchQueue.main.async {
+                withAnimation {
+                    showNavigationBarFavorite = offset < -100
+                }
             }
-        }
+            return Color.clear
+        })
     }
     
     func busArrivalRow(arrival: BusArrival) -> some View {
@@ -190,13 +168,11 @@ struct BusArrivalInfoView: View {
                 VStack(alignment: .leading) {
                     Text("\(arrival.routeName)")
                         .font(.headline)
-                    
                     Text("\(arrival.routeDestName) 방면")
                         .font(.caption2)
                         .foregroundColor(.gray)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                
                 DualTimeDisplayView(
                     seconds1: arrival.predictTimeSec1,
                     seconds2: arrival.predictTimeSec2
