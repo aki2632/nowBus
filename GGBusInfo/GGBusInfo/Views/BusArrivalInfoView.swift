@@ -25,7 +25,11 @@ struct BusArrivalInfoView: View {
     @State private var busArrivals: [BusArrival] = []
     @State private var timer: Timer?
     @State private var updateTimer: Timer?
-    @State private var showNavigationBarFavorite = false  // 스크롤 상태에 따라 즐겨찾기 버튼 위치 전환
+    @State private var showNavigationBarFavorite = false
+    
+    // 새로 추가한 상태 변수
+    @State private var rotation: Double = 0
+    @State private var isAnimating = false
     
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var favoriteStationManager: FavoriteStationManager
@@ -35,19 +39,54 @@ struct BusArrivalInfoView: View {
     }
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                headerView
-                ForEach(0..<busArrivals.count, id: \.self) { index in
-                    busArrivalRow(arrival: busArrivals[index])
-                    if index < busArrivals.count - 1 {
-                        Divider()
+        // ScrollView를 ZStack으로 감싸고, 하단 우측에 새로고침 버튼을 배치합니다.
+        ZStack {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    headerView
+                    ForEach(0..<busArrivals.count, id: \.self) { index in
+                        busArrivalRow(arrival: busArrivals[index])
+                        if index < busArrivals.count - 1 {
+                            Divider()
+                        }
                     }
                 }
+                .padding(.horizontal, 0)
             }
-            .padding(.horizontal, 0)
+            .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
+            
+            // 하단 우측 새로고침 버튼
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        // 데이터를 새로 불러옴
+                        fetchData()
+                        
+                        // 애니메이션 중복 실행 방지
+                        guard !isAnimating else { return }
+                        isAnimating = true
+                        rotation += 720
+                        
+                        // 1초 후 애니메이션 완료되면 상태 복원
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            isAnimating = false
+                        }
+                    }) {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .font(.system(size: 35))
+                            .padding()
+                            .background(Color.gray)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                            .rotationEffect(.degrees(rotation))
+                            .animation(.linear(duration: 1), value: rotation)
+                    }
+                    .padding()
+                }
+            }
         }
-        .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
         .navigationTitle(stationName)
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(true)
@@ -84,13 +123,9 @@ struct BusArrivalInfoView: View {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.gray
-            appearance.shadowColor = .clear    // 구분선(섀도우) 제거
-            appearance.titleTextAttributes = [
-                .foregroundColor: UIColor.white  // 기본 타이틀 폰트 색상
-            ]
-            appearance.largeTitleTextAttributes = [
-                .foregroundColor: UIColor.white  // large 타이틀 폰트 색상
-            ]
+            appearance.shadowColor = .clear
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
             
@@ -104,24 +139,21 @@ struct BusArrivalInfoView: View {
         }
     }
     
-    /// 상단 헤더 뷰: mobileNo와 (스크롤 상태에 따라) 즐겨찾기 버튼 포함, 어두운 회색 배경 적용
+    /// 상단 헤더 뷰 (스크롤 상태에 따라 즐겨찾기 버튼 포함)
     var headerView: some View {
         VStack(spacing: 0) {
-            // headerView의 위치를 추적하기 위한 GeometryReader
             GeometryReader { geo in
                 Color.clear
                     .preference(key: ViewOffsetKey.self, value: geo.frame(in: .global).minY)
             }
             .frame(height: 0)
             
-            // 전체 너비를 채우도록 frame 수정
             VStack {
                 VStack {
                     Text(mobileNo)
                         .font(.subheadline)
                         .foregroundColor(.white)
                     Spacer()
-                    // headerView가 화면에 보일 때는 오른쪽에 즐겨찾기 버튼 표시
                     if !showNavigationBarFavorite {
                         Button(action: {
                             toggleFavoriteStation()
@@ -135,7 +167,7 @@ struct BusArrivalInfoView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 8)
             }
-            .frame(maxWidth: .infinity)   // 화면 전체 너비로 확장
+            .frame(maxWidth: .infinity)
             .background(Color(.gray))
         }
         .onPreferenceChange(ViewOffsetKey.self) { value in
@@ -190,14 +222,6 @@ struct BusArrivalInfoView: View {
                 }
             }
         }
-    }
-    
-    func formatTime(_ seconds: Int?) -> String {
-        guard var timeInSeconds = seconds else { return "정보없음" }
-        if timeInSeconds > 0 { timeInSeconds -= 1 }
-        let minutes = timeInSeconds / 60
-        let secondsRemaining = timeInSeconds % 60
-        return "\(minutes)분 \(secondsRemaining)초 후"
     }
     
     func startCountdownTimer() {
