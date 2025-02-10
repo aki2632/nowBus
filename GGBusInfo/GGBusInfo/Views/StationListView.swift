@@ -105,13 +105,7 @@ struct StationListView: View {
                                         stationName: station.stationName,
                                         mobileNo: String(format: "%d", station.mobileNo)
                                     )) {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text(station.stationName)
-                                                .font(.headline)
-                                            Text(String(format: "%d", station.mobileNo))
-                                                .font(.caption)
-                                        }
-                                        .padding(.vertical, 4)
+                                        StationKeywordRowView(station: station)
                                     }
                                 }
                             }
@@ -135,18 +129,7 @@ struct StationListView: View {
                                         stationName: station.stationName,
                                         mobileNo: String(format: "%d", station.mobileNo)
                                     )) {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text(station.stationName)
-                                                .font(.headline)
-                                            HStack {
-                                                Text(String(format: "%d", station.mobileNo))
-                                                    .font(.caption)
-                                                Spacer()
-                                                Text("거리: \(station.distance) m")
-                                                    .font(.caption)
-                                            }
-                                        }
-                                        .padding(.vertical, 4)
+                                        StationAroundRowView(station: station)
                                     }
                                 }
                             }
