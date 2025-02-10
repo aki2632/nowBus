@@ -17,19 +17,19 @@ enum StationSearchMode: String, CaseIterable, Identifiable {
 
 struct StationListView: View {
     @State private var searchText: String = ""
-    @State private var keywordStations: [BusStation] = []  // 정류장 검색 결과
+    @State private var keywordStations: [BusStation] = []  // 키워드 검색 결과
     @State private var aroundStations: [BusStationAround] = [] // 현재 위치 기반 검색 결과
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var searchMode: StationSearchMode = .keyword  // 기본은 키워드 검색 모드
     
-    // 디바운스 작업을 저장하기 위한 cancellable 변수
+    // 디바운스 작업을 저장하기 위한 변수
     @State private var searchDebounceWorkItem: DispatchWorkItem?
     
     var body: some View {
         NavigationView {
             VStack {
-                // 모드 선택 Picker: 검색 결과 / 현재위치 결과
+                // 모드 선택 Picker: 키워드 검색 / 현재위치 기반 검색
                 Picker("검색 모드", selection: $searchMode) {
                     ForEach(StationSearchMode.allCases) { mode in
                         Text(mode.rawValue).tag(mode)
@@ -40,32 +40,44 @@ struct StationListView: View {
                 .padding(.top)
                 
                 if searchMode == .keyword {
-                    // 키워드 검색용 검색바
-                    TextField("정류소명 또는 번호 입력", text: $searchText)
-                        .textFieldStyle(RoundedTextFieldStyle())
-                        .padding(.horizontal)
-                        // 텍스트 변경 시 디바운스를 적용하여 검색 호출
-                        .onChange(of: searchText) { newValue in
-                            searchDebounceWorkItem?.cancel()
-                            let workItem = DispatchWorkItem {
-                                if !newValue.isEmpty {
-                                    searchStations()
-                                } else {
-                                    keywordStations = []
+                    // 커스텀 검색바: 좌측에 돋보기 아이콘, 중앙에 TextField, 우측에 클리어(x) 버튼
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        
+                        TextField("정류소명 또는 번호. 예) 백석역 또는 20311", text: $searchText)
+                            .disableAutocorrection(true)
+                            .onChange(of: searchText) { newValue in
+                                // 디바운스 적용: 입력 후 0.5초 후에 검색
+                                searchDebounceWorkItem?.cancel()
+                                let workItem = DispatchWorkItem {
+                                    if !newValue.isEmpty {
+                                        searchStations()
+                                    } else {
+                                        keywordStations = []
+                                    }
                                 }
+                                searchDebounceWorkItem = workItem
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
                             }
-                            searchDebounceWorkItem = workItem
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
+                        
+                        if !searchText.isEmpty {
+                            Button(action: {
+                                searchText = ""
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.gray)
+                            }
                         }
-                } else {
-                    // 현재 위치 기반 검색 모드의 경우
-                    Button(action: {
-                        fetchAroundStations()
-                    }) {
-                        Text("근처 정류장 검색")
                     }
-                    .buttonStyle(PrimaryButtonStyle())
+                    .padding(10)
+                    .background(Color(.systemGray5))
+                    .cornerRadius(8)
                     .padding(.horizontal)
+                    .font(.system(size: 12))
+                } else {
+                    // "근처 정류장 검색" 모드에서는 버튼 없이 자동으로 검색
+                    EmptyView()
                 }
                 
                 if isLoading {
@@ -73,49 +85,83 @@ struct StationListView: View {
                         .padding()
                 }
                 
-                List {
+                // 검색 결과 영역
+                Group {
                     if searchMode == .keyword {
-                        ForEach(keywordStations) { station in
-                            NavigationLink(destination: BusArrivalInfoView(
-                                stationId: "\(station.stationId)",
-                                stationName: station.stationName,
-                                mobileNo: String(format: "%d", station.mobileNo)
-                            )) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(station.stationName)")
-                                        .font(.headline)
-                                    Text(String(format: "%d", station.mobileNo))
-                                        .font(.caption)
-                                }
-                                .padding(.vertical, 4)
+                        if keywordStations.isEmpty {
+                            // 결과가 없을 때 전체 영역을 채우도록 frame modifier 적용
+                            VStack {
+                                Text("검색 결과가 없습니다.")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                                Spacer()
                             }
-                        }
-                    } else {
-                        ForEach(aroundStations) { station in
-                            NavigationLink(destination: BusArrivalInfoView(
-                                stationId: "\(station.stationId)",
-                                stationName: station.stationName,
-                                mobileNo: String(format: "%d", station.mobileNo)
-                            )) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(station.stationName)")
-                                        .font(.headline)
-                                    HStack {
-                                        Text(String(format: "%d", station.mobileNo))
-                                            .font(.caption)
-                                        Spacer()
-                                        Text("거리: \(station.distance) m")
-                                            .font(.caption)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        } else {
+                            List {
+                                ForEach(keywordStations) { station in
+                                    NavigationLink(destination: BusArrivalInfoView(
+                                        stationId: "\(station.stationId)",
+                                        stationName: station.stationName,
+                                        mobileNo: String(format: "%d", station.mobileNo)
+                                    )) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(station.stationName)
+                                                .font(.headline)
+                                            Text(String(format: "%d", station.mobileNo))
+                                                .font(.caption)
+                                        }
+                                        .padding(.vertical, 4)
                                     }
                                 }
-                                .padding(.vertical, 4)
                             }
+                            .listStyle(PlainListStyle())
+                        }
+                    } else {
+                        if aroundStations.isEmpty {
+                            // 결과가 없을 때 전체 영역을 채우도록 frame modifier 적용
+                            VStack {
+                                Text("검색 결과가 없습니다.")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        } else {
+                            List {
+                                ForEach(aroundStations) { station in
+                                    NavigationLink(destination: BusArrivalInfoView(
+                                        stationId: "\(station.stationId)",
+                                        stationName: station.stationName,
+                                        mobileNo: String(format: "%d", station.mobileNo)
+                                    )) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(station.stationName)
+                                                .font(.headline)
+                                            HStack {
+                                                Text(String(format: "%d", station.mobileNo))
+                                                    .font(.caption)
+                                                Spacer()
+                                                Text("거리: \(station.distance) m")
+                                                    .font(.caption)
+                                            }
+                                        }
+                                        .padding(.vertical, 4)
+                                    }
+                                }
+                            }
+                            .listStyle(PlainListStyle())
                         }
                     }
                 }
-                .listStyle(PlainListStyle())
             }
             .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
+            // 검색 모드가 변경될 때(.location) 자동으로 현재 위치 기반 정류장 검색 실행
+            .onChange(of: searchMode) { newMode in
+                if newMode == .location {
+                    fetchAroundStations()
+                }
+            }
         }
     }
     
@@ -144,6 +190,7 @@ struct StationListView: View {
         errorMessage = nil
         
         let locationManager = LocationManager()
+        // 간단한 딜레이 후 위치 정보를 확인 (실제 앱에서는 LocationManager의 delegate나 async/await 패턴을 활용할 수 있습니다.)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             guard let currentLocation = locationManager.location else {
                 self.errorMessage = "현재 위치를 가져올 수 없습니다."

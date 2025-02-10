@@ -22,6 +22,9 @@ struct BusArrivalInfoView: View {
     @State private var rotation: Double = 0
     @State private var isAnimating = false
     
+    // 즐겨찾기 해제 확인 팝업을 위한 상태 변수 (추가됨)
+    @State private var showUnfavoriteConfirmation = false
+    
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var favoriteStationManager: FavoriteStationManager
     
@@ -99,6 +102,17 @@ struct BusArrivalInfoView: View {
                 }
             }
         }
+        // 즐겨찾기 해제 시 확인 팝업 추가 (추가됨)
+        .alert(isPresented: $showUnfavoriteConfirmation) {
+            Alert(
+                title: Text("즐겨찾기 해제"),
+                message: Text("정말로 즐겨찾기를 해제하시겠습니까?\n 함께 저장한 버스 즐겨찾기도 삭제됩니다."),
+                primaryButton: .destructive(Text("해제하기")) {
+                    favoriteStationManager.removeFavoriteStation(stationId: stationId)
+                },
+                secondaryButton: .cancel(Text("취소"))
+            )
+        }
         .onAppear {
             // 네비게이션 바의 외형 설정
             let appearance = UINavigationBarAppearance()
@@ -143,7 +157,7 @@ struct BusArrivalInfoView: View {
         }
         .frame(maxWidth: .infinity)
         .background(Color(.gray))
-        // 참고 코드와 같이 background에 GeometryReader를 사용하여 오프셋 측정
+        // 스크롤에 따른 오프셋 측정
         .background(GeometryReader { proxy -> Color in
             let offset = proxy.frame(in: .global).minY
             DispatchQueue.main.async {
@@ -219,9 +233,10 @@ struct BusArrivalInfoView: View {
         }
     }
     
+    // 기존 코드를 유지하면서 즐겨찾기 해제 시 확인 팝업을 띄우도록 수정 (수정됨)
     func toggleFavoriteStation() {
         if isFavoriteStation {
-            favoriteStationManager.removeFavoriteStation(stationId: stationId)
+            showUnfavoriteConfirmation = true
         } else {
             favoriteStationManager.addFavoriteStation(stationId: stationId, stationName: stationName, mobileNo: mobileNo)
         }
@@ -231,6 +246,10 @@ struct BusArrivalInfoView: View {
         if favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: routeId) {
             favoriteStationManager.removeFavoriteBusRoute(stationId: stationId, routeId: routeId)
         } else {
+            // 정류장이 즐겨찾기에 없으면 정류장도 추가합니다.
+            if !favoriteStationManager.isFavoriteStation(stationId: stationId) {
+                favoriteStationManager.addFavoriteStation(stationId: stationId, stationName: stationName, mobileNo: mobileNo)
+            }
             favoriteStationManager.addFavoriteBusRoute(stationId: stationId, routeId: routeId, routeName: routeName)
         }
         sortBusArrivals()

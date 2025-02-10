@@ -28,27 +28,37 @@ struct FavoriteStationRowView: View {
             Divider()
                 .padding(.horizontal, 0)
             
-            ForEach(Array(station.busRoutes.enumerated()), id: \.element.routeId) { index, route in
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text(route.routeName)
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        if let arrival = busArrivals.first(where: { $0.routeId == route.routeId }) {
-                            DualTimeDisplayView(
-                                seconds1: arrival.predictTimeSec1,
-                                seconds2: arrival.predictTimeSec2
-                            )
-                            .font(.caption)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
+            // 버스 즐겨찾기가 없다면 안내 문구 표시
+            if station.busRoutes.isEmpty {
+                Text("버스 즐겨찾기를 추가해주세요")
+                    .foregroundColor(.gray)
+                    .font(.subheadline)
                     .padding()
-                    
-                    if index < station.busRoutes.count - 1 { // 마지막 노선이 아닌 경우에만 Divider 추가
-                        Divider()
-                            .padding(.leading)
+            } else {
+                ForEach(Array(station.busRoutes.enumerated()), id: \.element.routeId) { index, route in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text(route.routeName)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            if let arrival = busArrivals.first(where: { $0.routeId == route.routeId }) {
+                                DualTimeDisplayView(
+                                    seconds1: arrival.predictTimeSec1,
+                                    seconds2: arrival.predictTimeSec2
+                                )
+                                .font(.caption)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            
+                            Spacer(minLength: 60)
+                        }
+                        .padding()
+                        
+                        if index < station.busRoutes.count - 1 { // 마지막 노선이 아닌 경우에만 Divider 추가
+                            Divider()
+                                .padding(.leading)
+                        }
                     }
                 }
             }

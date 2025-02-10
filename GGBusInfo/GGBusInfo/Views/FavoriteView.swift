@@ -35,6 +35,17 @@ struct FavoriteView: View {
                 }
                 .background(Color(.systemGray5))
                 
+                // 즐겨찾기가 비어있으면 중앙에 안내 문구 표시
+                if favoriteStationManager.favoriteStations.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("즐겨찾기를 추가해주세요")
+                            .foregroundColor(.gray)
+                            .font(.title3)
+                        Spacer()
+                    }
+                }
+                
                 // 우측 하단에 새로고침 버튼 배치
                 VStack {
                     Spacer()
