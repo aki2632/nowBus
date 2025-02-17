@@ -18,7 +18,7 @@ struct BusArrivalHeaderView: View {
             VStack {
                 Text(mobileNo)
                     .font(.subheadline)
-                    .foregroundColor(.white)
+                    .foregroundColor(AppTheme.customWhite)
                 Spacer()
                 // 스크롤에 따라 네비게이션 바에 별 버튼이 노출될 때는 헤더 내 버튼 숨김
                 if !showNavigationBarFavorite {
@@ -33,7 +33,7 @@ struct BusArrivalHeaderView: View {
             .padding(.vertical, 8)
         }
         .frame(maxWidth: .infinity)
-        .background(Color(.gray))
+        .background(AppTheme.customGray)
         // 스크롤 오프셋에 따라 showNavigationBarFavorite 값을 업데이트
         .background(GeometryReader { proxy -> Color in
             let offset = proxy.frame(in: .global).minY

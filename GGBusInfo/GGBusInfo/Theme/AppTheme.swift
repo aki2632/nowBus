@@ -8,11 +8,19 @@
 import SwiftUI
 
 struct AppTheme {
-    // 앱 전반에서 사용하는 색상, 폰트 등 정의
+    // 기존 시스템 색상
     static let backgroundColor = Color(UIColor.systemGroupedBackground)
     static let primaryColor = Color.blue
     static let accentColor = Color.yellow
-    static let textFieldBackground = Color(UIColor.systemGray6)
+    static let textFieldBackground = Color(UIColor.systemGroupedBackground)
+    
+    // Assets에 등록한 커스텀 색상
+    // CustomBlack: 기본 하얀색, 다크모드시 검정색
+    // CustomWhite: 기본 검정색, 다크모드시 하얀색
+    // CustomGray: 기본 밝은 회색, 다크모드시 어두운 회색
+    static let customBlack = Color("CustomBlack")
+    static let customWhite = Color("CustomWhite")
+    static let customGray = Color("CustomGray")
 }
 
 struct PrimaryButtonStyle: ButtonStyle {
@@ -22,7 +30,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .padding()
             .frame(maxWidth: .infinity)
             .background(AppTheme.primaryColor)
-            .foregroundColor(.white)
+            .foregroundColor(AppTheme.customBlack)
             .cornerRadius(8)
             .opacity(configuration.isPressed ? 0.7 : 1.0)
     }

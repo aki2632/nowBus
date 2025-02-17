@@ -16,14 +16,22 @@ struct FavoriteStationRowView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            VStack(alignment: .leading) {
-                Text(station.stationName)
-                    .font(.headline)
-                Text(station.mobileNo)
-                    .font(.caption)
-                    .foregroundStyle(.gray)
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(station.stationName)
+                        .font(.headline)
+                    Text(station.mobileNo)
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+                .padding()
+                
+                Spacer()
+                
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .imageScale(.medium)
+                    .padding()
             }
-            .padding()
                 
             Divider()
                 .padding(.horizontal, 0)

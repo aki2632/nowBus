@@ -7,7 +7,25 @@
 		<key>GGBusInfo.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>6</integer>
+		</dict>
+		<key>GGBusInfoWidgetExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>5</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>74B185F32D506B4E0064B4DF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>74DB758B2D59F2E300421E6A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

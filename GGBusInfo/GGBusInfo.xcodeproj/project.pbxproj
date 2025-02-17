@@ -7,12 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		74DB758E2D59F2E300421E6A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74DB758D2D59F2E300421E6A /* WidgetKit.framework */; };
+		74DB75902D59F2E300421E6A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74DB758F2D59F2E300421E6A /* SwiftUI.framework */; };
+		74DB759B2D59F2E600421E6A /* GGBusInfoWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 74DB758C2D59F2E300421E6A /* GGBusInfoWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FEFA8C11CFDA7935A5FF77DD /* Pods_GGBusInfo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86CEFBE3CE015691729782D4 /* Pods_GGBusInfo.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		74DB75992D59F2E600421E6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 74B185EC2D506B4E0064B4DF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 74DB758B2D59F2E300421E6A;
+			remoteInfo = GGBusInfoWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		74DB75A02D59F2E600421E6A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				74DB759B2D59F2E600421E6A /* GGBusInfoWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4AE48B34509FA60173C8DCF9 /* Pods-GGBusInfo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GGBusInfo.debug.xcconfig"; path = "Target Support Files/Pods-GGBusInfo/Pods-GGBusInfo.debug.xcconfig"; sourceTree = "<group>"; };
 		74B185F42D506B4E0064B4DF /* GGBusInfo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GGBusInfo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		74DB758C2D59F2E300421E6A /* GGBusInfoWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GGBusInfoWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		74DB758D2D59F2E300421E6A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		74DB758F2D59F2E300421E6A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		74DB75A12D59F30D00421E6A /* GGBusInfoWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GGBusInfoWidgetExtension.entitlements; sourceTree = "<group>"; };
 		86CEFBE3CE015691729782D4 /* Pods_GGBusInfo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GGBusInfo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4610A05B6A6F4BD5679B34E /* Pods-GGBusInfo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GGBusInfo.release.xcconfig"; path = "Target Support Files/Pods-GGBusInfo/Pods-GGBusInfo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -25,6 +56,13 @@
 			);
 			target = 74B185F32D506B4E0064B4DF /* GGBusInfo */;
 		};
+		74DB759F2D59F2E600421E6A /* Exceptions for "GGBusInfoWidget" folder in "GGBusInfoWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 74DB758B2D59F2E300421E6A /* GGBusInfoWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -36,6 +74,14 @@
 			path = GGBusInfo;
 			sourceTree = "<group>";
 		};
+		74DB75912D59F2E300421E6A /* GGBusInfoWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				74DB759F2D59F2E600421E6A /* Exceptions for "GGBusInfoWidget" folder in "GGBusInfoWidgetExtension" target */,
+			);
+			path = GGBusInfoWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +90,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEFA8C11CFDA7935A5FF77DD /* Pods_GGBusInfo.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74DB75892D59F2E300421E6A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74DB75902D59F2E300421E6A /* SwiftUI.framework in Frameworks */,
+				74DB758E2D59F2E300421E6A /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +117,9 @@
 		74B185EB2D506B4E0064B4DF = {
 			isa = PBXGroup;
 			children = (
+				74DB75A12D59F30D00421E6A /* GGBusInfoWidgetExtension.entitlements */,
 				74B185F62D506B4E0064B4DF /* GGBusInfo */,
+				74DB75912D59F2E300421E6A /* GGBusInfoWidget */,
 				74B185F52D506B4E0064B4DF /* Products */,
 				63207B7FE5BB03F3FFA39232 /* Pods */,
 				AA1A8C0724A53950492D2E5C /* Frameworks */,
@@ -73,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				74B185F42D506B4E0064B4DF /* GGBusInfo.app */,
+				74DB758C2D59F2E300421E6A /* GGBusInfoWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,6 +139,8 @@
 			isa = PBXGroup;
 			children = (
 				86CEFBE3CE015691729782D4 /* Pods_GGBusInfo.framework */,
+				74DB758D2D59F2E300421E6A /* WidgetKit.framework */,
+				74DB758F2D59F2E300421E6A /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -97,10 +157,12 @@
 				74B185F12D506B4E0064B4DF /* Frameworks */,
 				74B185F22D506B4E0064B4DF /* Resources */,
 				F0DF5B05B1EB14244B49B4AD /* [CP] Embed Pods Frameworks */,
+				74DB75A02D59F2E600421E6A /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				74DB759A2D59F2E600421E6A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				74B185F62D506B4E0064B4DF /* GGBusInfo */,
@@ -109,6 +171,28 @@
 			productName = GGBusInfo;
 			productReference = 74B185F42D506B4E0064B4DF /* GGBusInfo.app */;
 			productType = "com.apple.product-type.application";
+		};
+		74DB758B2D59F2E300421E6A /* GGBusInfoWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 74DB759C2D59F2E600421E6A /* Build configuration list for PBXNativeTarget "GGBusInfoWidgetExtension" */;
+			buildPhases = (
+				74DB75882D59F2E300421E6A /* Sources */,
+				74DB75892D59F2E300421E6A /* Frameworks */,
+				74DB758A2D59F2E300421E6A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				74DB75912D59F2E300421E6A /* GGBusInfoWidget */,
+			);
+			name = GGBusInfoWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = GGBusInfoWidgetExtension;
+			productReference = 74DB758C2D59F2E300421E6A /* GGBusInfoWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -121,6 +205,9 @@
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					74B185F32D506B4E0064B4DF = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					74DB758B2D59F2E300421E6A = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
@@ -140,12 +227,20 @@
 			projectRoot = "";
 			targets = (
 				74B185F32D506B4E0064B4DF /* GGBusInfo */,
+				74DB758B2D59F2E300421E6A /* GGBusInfoWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		74B185F22D506B4E0064B4DF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74DB758A2D59F2E300421E6A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -204,7 +299,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		74DB75882D59F2E300421E6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		74DB759A2D59F2E600421E6A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 74DB758B2D59F2E300421E6A /* GGBusInfoWidgetExtension */;
+			targetProxy = 74DB75992D59F2E600421E6A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		74B186012D506B510064B4DF /* Debug */ = {
@@ -328,6 +438,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GGBusInfo/GGBusInfo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GGBusInfo/Preview Content\"";
@@ -338,6 +449,7 @@
 				INFOPLIST_FILE = GGBusInfo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "나우버스 경기";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 귀하의 위치 정보를 사용하여 500m 이내 정류장 정보를 제공하기 위해 위치 권한을 필요로 합니다.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -351,7 +463,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gg.bus.GGBusInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -370,6 +482,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GGBusInfo/GGBusInfo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GGBusInfo/Preview Content\"";
@@ -380,6 +493,7 @@
 				INFOPLIST_FILE = GGBusInfo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "나우버스 경기";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 귀하의 위치 정보를 사용하여 500m 이내 정류장 정보를 제공하기 위해 위치 권한을 필요로 합니다.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -393,7 +507,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gg.bus.GGBusInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -402,6 +516,69 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		74DB759D2D59F2E600421E6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = GGBusInfoWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3Z3Z2QU4A3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GGBusInfoWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GGBusInfoWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gg.bus.GGBusInfo.GGBusInfoWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		74DB759E2D59F2E600421E6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = GGBusInfoWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3Z3Z2QU4A3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GGBusInfoWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GGBusInfoWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gg.bus.GGBusInfo.GGBusInfoWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -422,6 +599,15 @@
 			buildConfigurations = (
 				74B186042D506B510064B4DF /* Debug */,
 				74B186052D506B510064B4DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		74DB759C2D59F2E600421E6A /* Build configuration list for PBXNativeTarget "GGBusInfoWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				74DB759D2D59F2E600421E6A /* Debug */,
+				74DB759E2D59F2E600421E6A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

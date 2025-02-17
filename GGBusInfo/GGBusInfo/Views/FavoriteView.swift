@@ -23,7 +23,7 @@ struct FavoriteView: View {
                                 mobileNo: station.mobileNo)
                             ) {
                                 FavoriteStationRowView(station: station)
-                                    .background(Color(.white))
+                                    .background(AppTheme.customBlack)
                                     .cornerRadius(5)
                                     .padding(.horizontal, 0)
                             }
@@ -31,26 +31,25 @@ struct FavoriteView: View {
                     }
                     .padding(.vertical)
                 }
-                .background(Color(.systemGray5))
+                .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
                 
-                // 즐겨찾기가 비어있을 때 안내 문구 표시
                 if favoriteStationManager.favoriteStations.isEmpty {
                     VStack {
                         Spacer()
                         Text("즐겨찾기를 추가해주세요")
                             .foregroundColor(.gray)
                             .font(.title3)
+                            .frame(maxWidth: .infinity)
                         Spacer()
                     }
+                    .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
                 }
                 
-                // 우측 하단 새로고침 버튼 (분리한 RefreshButtonView 사용)
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
                         RefreshButtonView(action: {
-                            // 새로고침 시 알림 전송
                             NotificationCenter.default.post(name: Notification.Name("RefreshBusArrival"), object: nil)
                         })
                         .padding()

@@ -6,11 +6,28 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct ContentView: View {
-    @StateObject var favoriteStationManager = FavoriteStationManager()
-    @State private var selectedTab = 1
+    init() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        // 탭바 배경색을 커스텀 회색으로 설정
+        tabBarAppearance.backgroundColor = UIColor(AppTheme.customBlack)
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+
+        // 선택된 탭 색상
+        UITabBar.appearance().tintColor = UIColor(AppTheme.primaryColor)
+        // 선택되지 않은 탭 색상
+        UITabBar.appearance().unselectedItemTintColor = UIColor(AppTheme.customWhite)
+    }
     
+    @StateObject var favoriteStationManager = FavoriteStationManager()
+    @StateObject var locationManager = LocationManager()
+    @State private var selectedTab = 1
+    @State private var showLocationAlert = false
+
     var body: some View {
         TabView(selection: $selectedTab) {
             StationListView()
@@ -25,7 +42,7 @@ struct ContentView: View {
                 }
                 .tag(1)
             
-            Text("설정")
+            OptionView()
                 .tabItem {
                     Label("설정", systemImage: "gear")
                 }
@@ -33,5 +50,26 @@ struct ContentView: View {
         }
         .environmentObject(favoriteStationManager)
         .accentColor(AppTheme.primaryColor)
+        .onAppear {
+            checkLocationStatus()
+        }
+        .onReceive(locationManager.$error) { _ in
+            checkLocationStatus()
+        }
+    }
+    
+    func checkLocationStatus() {
+        let status = CLLocationManager.authorizationStatus()
+        switch status {
+        case .notDetermined:
+            locationManager.requestAuthorization()  // 수정된 부분
+            showLocationAlert = false
+        case .authorizedAlways, .authorizedWhenInUse:
+            showLocationAlert = false
+        case .denied, .restricted:
+            showLocationAlert = true
+        @unknown default:
+            showLocationAlert = false
+        }
     }
 }

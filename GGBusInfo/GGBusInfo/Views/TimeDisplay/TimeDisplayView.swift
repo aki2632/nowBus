@@ -11,7 +11,7 @@ struct TimeDisplayView: View {
     let seconds: Int?
     
     // 전체 프레임 너비를 totalWidth로 통일
-    private let totalWidth: CGFloat = 70
+    private let totalWidth: CGFloat = 75
     
     var body: some View {
         HStack(spacing: 0) {

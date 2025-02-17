@@ -30,7 +30,7 @@ struct BusArrivalInfoView: View {
         ZStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 0) {
-                    // 헤더를 분리한 컴포넌트 사용
+                    // 분리한 헤더 컴포넌트 (다크모드 색상 적용)
                     BusArrivalHeaderView(
                         mobileNo: mobileNo,
                         isFavoriteStation: isFavoriteStation,
@@ -49,7 +49,7 @@ struct BusArrivalInfoView: View {
             }
             .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
             
-            // 하단 우측 새로고침 버튼 (분리한 RefreshButtonView 사용)
+            // 우측 하단 새로고침 버튼 (RefreshButtonView 사용)
             VStack {
                 Spacer()
                 HStack {
@@ -63,13 +63,13 @@ struct BusArrivalInfoView: View {
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(true)
         .toolbar {
-            // 네비게이션 바 좌측 뒤로가기 버튼
+            // 네비게이션 바 좌측 뒤로가기 버튼 (다크모드 색상 적용)
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.white)
+                        .foregroundColor(AppTheme.customWhite)
                         .font(.system(size: 20, weight: .medium))
                 }
             }
@@ -77,9 +77,7 @@ struct BusArrivalInfoView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Group {
                     if showNavigationBarFavorite {
-                        Button(action: {
-                            toggleFavoriteStation()
-                        }) {
+                        Button(action: toggleFavoriteStation) {
                             Image(systemName: isFavoriteStation ? "star.fill" : "star")
                                 .foregroundColor(isFavoriteStation ? AppTheme.accentColor : .gray)
                                 .font(.system(size: 20))
@@ -99,13 +97,13 @@ struct BusArrivalInfoView: View {
             )
         }
         .onAppear {
-            // 네비게이션 바 외형 설정
+            // 네비게이션 바 외형 설정 (다크모드에 맞는 커스텀 색상 적용)
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.gray
+            appearance.backgroundColor = UIColor(AppTheme.customGray)
             appearance.shadowColor = .clear
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.titleTextAttributes = [.foregroundColor: UIColor(AppTheme.customWhite)]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppTheme.customWhite)]
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
             
@@ -119,7 +117,7 @@ struct BusArrivalInfoView: View {
         }
     }
     
-    /// 버스 도착 정보 행
+    /// 버스 도착 정보 행: 즐겨찾기 버튼 및 도착 시간 정보를 표시 (다크모드 색상 적용)
     func busArrivalRow(arrival: BusArrival) -> some View {
         HStack {
             Button(action: {
@@ -147,11 +145,11 @@ struct BusArrivalInfoView: View {
             }
         }
         .padding()
-        .background(Color.white)
+        .background(AppTheme.customBlack)
         .cornerRadius(5)
     }
     
-    /// API 호출 및 데이터 정렬
+    /// API 호출: 버스 도착 정보 데이터를 불러오고 정렬합니다.
     func fetchData() {
         BusAPIService.shared.fetchBusArrivalInfo(for: stationId) { result in
             DispatchQueue.main.async {
@@ -166,6 +164,7 @@ struct BusArrivalInfoView: View {
         }
     }
     
+    /// 매초마다 버스 도착 시간 카운트다운을 업데이트합니다.
     func startCountdownTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             for i in 0..<self.busArrivals.count {
@@ -179,13 +178,14 @@ struct BusArrivalInfoView: View {
         }
     }
     
+    /// 일정 주기로 데이터를 업데이트합니다.
     func startUpdateTimer() {
         updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
             self.fetchData()
         }
     }
     
-    /// 정류장 즐겨찾기 토글 (즐겨찾기 해제 시 알림 표시)
+    /// 정류장 즐겨찾기 토글: 이미 즐겨찾기된 경우 알림을 표시합니다.
     func toggleFavoriteStation() {
         if isFavoriteStation {
             showUnfavoriteConfirmation = true
@@ -194,6 +194,7 @@ struct BusArrivalInfoView: View {
         }
     }
     
+    /// 버스 노선 즐겨찾기 토글: 즐겨찾기 상태에 따라 추가 또는 제거하며, 정렬을 업데이트합니다.
     func toggleBusRouteFavorite(routeId: Int, routeName: String) {
         if favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: routeId) {
             favoriteStationManager.removeFavoriteBusRoute(stationId: stationId, routeId: routeId)
@@ -206,6 +207,7 @@ struct BusArrivalInfoView: View {
         sortBusArrivals()
     }
     
+    /// 버스 도착 정보를 즐겨찾기 여부와 도착 시간을 기준으로 정렬합니다.
     func sortBusArrivals() {
         busArrivals.sort { arrival1, arrival2 in
             let isFav1 = favoriteStationManager.isFavoriteBusRoute(stationId: stationId, routeId: arrival1.routeId)

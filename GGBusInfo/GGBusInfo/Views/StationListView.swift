@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import CoreLocation
 
 enum StationSearchMode: String, CaseIterable, Identifiable {
     case keyword = "정류장 검색"
@@ -22,6 +23,8 @@ struct StationListView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var searchMode: StationSearchMode = .keyword  // 기본은 키워드 검색 모드
+    @State private var showLocationAlert = false
+    @StateObject var locationManager = LocationManager()
     
     // 디바운스 작업을 저장하기 위한 변수
     @State private var searchDebounceWorkItem: DispatchWorkItem?
@@ -29,26 +32,30 @@ struct StationListView: View {
     var body: some View {
         NavigationView {
             VStack {
-                // 모드 선택 Picker: 키워드 검색 / 현재위치 기반 검색
+                // 모드 선택 Picker
                 Picker("검색 모드", selection: $searchMode) {
                     ForEach(StationSearchMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.rawValue)
+                            .font(.system(size: 18, weight: .medium))
+                            .tag(mode)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
                 .padding(.top)
+                .frame(height: 80)
                 
                 if searchMode == .keyword {
-                    // 커스텀 검색바: 좌측에 돋보기 아이콘, 중앙에 TextField, 우측에 클리어(x) 버튼
+                    // 검색바: 돋보기, 텍스트필드, 클리어 버튼
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
+                            .font(.system(size: 18))
                         
                         TextField("정류소명 또는 번호. 예) 백석역 또는 20311", text: $searchText)
                             .disableAutocorrection(true)
+                            .font(.system(size: 15))
                             .onChange(of: searchText) { newValue in
-                                // 디바운스 적용: 입력 후 0.5초 후에 검색
                                 searchDebounceWorkItem?.cancel()
                                 let workItem = DispatchWorkItem {
                                     if !newValue.isEmpty {
@@ -67,16 +74,16 @@ struct StationListView: View {
                             }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundColor(.gray)
+                                    .font(.system(size: 18))
                             }
                         }
                     }
-                    .padding(10)
+                    .padding(12)
+                    .frame(height: 50)
                     .background(Color(.systemGray5))
                     .cornerRadius(8)
                     .padding(.horizontal)
-                    .font(.system(size: 12))
                 } else {
-                    // "근처 정류장 검색" 모드에서는 버튼 없이 자동으로 검색
                     EmptyView()
                 }
                 
@@ -89,9 +96,8 @@ struct StationListView: View {
                 Group {
                     if searchMode == .keyword {
                         if keywordStations.isEmpty {
-                            // 결과가 없을 때 전체 영역을 채우도록 frame modifier 적용
                             VStack {
-                                Text("검색 결과가 없습니다.")
+                                Text("검색 결과가 없습니다")
                                     .foregroundColor(.gray)
                                     .padding()
                                 Spacer()
@@ -107,15 +113,15 @@ struct StationListView: View {
                                     )) {
                                         StationKeywordRowView(station: station)
                                     }
+                                    .listRowBackground(AppTheme.customBlack)
                                 }
                             }
                             .listStyle(PlainListStyle())
                         }
                     } else {
                         if aroundStations.isEmpty {
-                            // 결과가 없을 때 전체 영역을 채우도록 frame modifier 적용
                             VStack {
-                                Text("검색 결과가 없습니다.")
+                                Text("검색 결과가 없습니다")
                                     .foregroundColor(.gray)
                                     .padding()
                                 Spacer()
@@ -131,6 +137,7 @@ struct StationListView: View {
                                     )) {
                                         StationAroundRowView(station: station)
                                     }
+                                    .listRowBackground(AppTheme.customBlack)
                                 }
                             }
                             .listStyle(PlainListStyle())
@@ -139,12 +146,53 @@ struct StationListView: View {
                 }
             }
             .background(AppTheme.backgroundColor.edgesIgnoringSafeArea(.all))
-            // 검색 모드가 변경될 때(.location) 자동으로 현재 위치 기반 정류장 검색 실행
             .onChange(of: searchMode) { newMode in
+                let status = CLLocationManager.authorizationStatus()
+                
+                if status == .denied || status == .restricted {
+                    // 모드 변경 시 검색 결과 및 텍스트 초기화
+                    self.keywordStations = []
+                    self.aroundStations = []
+                    self.searchText = ""
+                }
+                
                 if newMode == .location {
+                    checkLocationStatus()
                     fetchAroundStations()
                 }
             }
+        }
+        .alert(isPresented: $showLocationAlert) {
+            Alert(
+              title: Text("위치 Off"),
+              message: Text("현재 위치를 파악할 수 없습니다. \n\n설정에서 위치 서비스를 활성화해주세요.\n앱을 사용하는 동안 허용에 체크해주세요."),
+              primaryButton: .default(Text("설정 이동"), action: {
+                openAppSettings()
+              }),
+              secondaryButton: .cancel()
+            )
+        }
+    }
+    
+    func checkLocationStatus() {
+        let status = CLLocationManager.authorizationStatus()
+        switch status {
+        case .notDetermined:
+            locationManager.requestAuthorization()  // 수정된 부분
+            showLocationAlert = false
+        case .authorizedAlways, .authorizedWhenInUse:
+            showLocationAlert = false
+        case .denied, .restricted:
+            showLocationAlert = true
+        @unknown default:
+            showLocationAlert = false
+        }
+    }
+   
+    // 설정 이동
+    private func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
     
@@ -195,11 +243,5 @@ struct StationListView: View {
                 }
             }
         }
-    }
-}
-
-struct StationListView_Previews: PreviewProvider {
-    static var previews: some View {
-        StationListView()
     }
 }

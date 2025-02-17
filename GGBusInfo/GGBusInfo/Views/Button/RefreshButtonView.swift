@@ -24,11 +24,12 @@ struct RefreshButtonView: View {
             }
         }) {
             Image(systemName: "arrow.triangle.2.circlepath")
-                .font(.system(size: 35))
+                .font(.system(size: 20))
                 .padding()
-                .background(Color.gray)
-                .foregroundColor(.white)
+                .background(AppTheme.customWhite)
+                .foregroundColor(AppTheme.customBlack)
                 .clipShape(Circle())
+                .shadow(color: Color.black.opacity(0.3), radius: 4, x: 2, y: 2)
                 .rotationEffect(.degrees(rotation))
                 .animation(.linear(duration: 1), value: rotation)
         }

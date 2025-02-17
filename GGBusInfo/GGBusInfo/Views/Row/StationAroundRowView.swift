@@ -18,7 +18,7 @@ struct StationAroundRowView: View {
                 Text(String(format: "%d", station.mobileNo))
                     .font(.caption)
                 Spacer()
-                Text("거리: \(station.distance) m")
+                Text("\(station.distance) m")
                     .font(.caption)
             }
         }
